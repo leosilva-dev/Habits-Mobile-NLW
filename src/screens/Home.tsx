@@ -1,6 +1,6 @@
-import { useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { Text, View, ScrollView, Alert } from "react-native";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 import { generateDatesFromYearBeginning } from "../utils/generate-dates-from-year-beginning";
 import { api } from "../lib/axios";
@@ -30,23 +30,22 @@ export function Home() {
 
   async function fetchData() {
     try {
-      console.log("Fetching data...");
       setLoading(true);
       const response = await api.get("/summary");
       setSummary(response.data);
     } catch (error) {
-      console.log("caio no catch");
       Alert.alert("Ops", "Não foi possível carregar o sumário de hábitos.");
       console.log(error);
     } finally {
-      console.log("chegou na finally");
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchData();
+    }, [])
+  );
 
   if (loading) {
     return <Loading />;
